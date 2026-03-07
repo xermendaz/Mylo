@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Myllo Fraction</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<!-- ══════ SETUP MODAL ══════ -->
+<div id="setupModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">Myllo</div>
+    <div class="modal-sub">Configure your canvas</div>
+    <div class="setup-row">
+      <label>Canvas Size</label>
+      <div class="btn-group" id="sizeGroup">
+        <button class="sg-btn active" data-val="8">8×8</button>
+        <button class="sg-btn" data-val="16">16×16</button>
+        <button class="sg-btn" data-val="24">24×24</button>
+        <button class="sg-btn" data-val="32">32×32</button>
+        <button class="sg-btn" data-val="48">48×48</button>
+        <button class="sg-btn" data-val="64">64×64</button>
+      </div>
+    </div>
+    <div class="setup-row">
+      <label>Custom Size</label>
+      <div class="custom-size-row">
+        <input type="number" id="customW" min="2" max="128" placeholder="W">
+        <span>×</span>
+        <input type="number" id="customH" min="2" max="128" placeholder="H">
+        <button id="customApply">Apply</button>
+      </div>
+    </div>
+    <div class="setup-row">
+      <label>Preview</label>
+      <div class="preview-info" id="previewInfo">8 × 8 pixels — 64 cells</div>
+    </div>
+    <button id="startBtn" class="start-btn">START DRAWING →</button>
+  </div>
+</div>
+
+<!-- ══════ MAIN APP ══════ -->
+<div id="app" class="hidden">
+
+  <!-- TOOLBAR -->
+  <header id="toolbar">
+    <div class="logo">MF</div>
+    <div class="tb-sep"></div>
+
+    <!-- Mode -->
+    <button class="tb-btn active" id="editModeBtn" title="Edit mode">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      EDIT
+    </button>
+    <button class="tb-btn" id="viewModeBtn" title="View mode">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      VIEW
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Drawing tools -->
+    <div id="toolsGroup" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+      <button class="tool-btn active" data-tool="paint" title="Paint (P)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="erase" title="Erase (R)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l11-11 6 6-4 4"/><line x1="6" y1="20" x2="20" y2="20"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="fill" title="Fill (F)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l4 4L8 20l-4-4L16 4z"/><path d="M21.5 20.5a2.5 2.5 0 01-5 0c0-1.5 2.5-5 2.5-5s2.5 3.5 2.5 5z"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="eyedrop" title="Eyedrop (K)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 8l-4-4-9 9 4 4 9-9z"/><path d="M7 17l-4 4"/><circle cx="4.5" cy="20.5" r="1.5"/></svg>
+      </button>
+      <button class="tool-btn" data-tool="text" title="Text (T)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="12" y1="7" x2="12" y2="21"/></svg>
+      </button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" id="selectToggleBtn" title="Select area">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="1" stroke-dasharray="4 2"/></svg>
+        SEL
+      </button>
+      <button class="tb-btn" id="moveToggleBtn" title="Move pixels">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+        MOVE
+      </button>
+      <button class="tb-btn" id="copyBtn" title="Copy selection">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="1"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        COPY
+      </button>
+      <button class="tb-btn" id="pasteBtn" title="Paste">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        PASTE
+      </button>
+    </div>
+    <div class="tb-sep"></div>
+
+    <!-- Color -->
+    <div class="color-section">
+      <div class="color-swatch-wrap" title="Pick color">
+        <div id="colorSwatch" class="color-swatch"></div>
+        <input type="color" id="colorPicker" value="#111111">
+      </div>
+      <input type="text" id="colorHex" class="hex-input" value="#111111" maxlength="7">
+    </div>
+    <div class="tb-sep"></div>
+
+    <!-- Palette -->
+    <div id="paletteWrap"><div id="palette"></div></div>
+    <button class="tb-btn" id="addPaletteBtn" title="Add current color to palette" style="padding:5px 7px;">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- History -->
+    <button class="tb-btn" id="unpaintBtn" title="Undo (Q or Ctrl+Z)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>
+      UNDO
+    </button>
+    <button class="tb-btn danger" id="clearBtn" title="Clear active layer">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+      CLR
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Zoom display only -->
+    <span id="zoomLbl" class="zoom-lbl">100%</span>
+    <div class="tb-sep"></div>
+
+    <!-- Ghost -->
+    <button class="tb-btn" id="ghostBtn" title="Ghost overlay">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7 2 3 6 3 11v9l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v-9c0-5-4-9-9-9z"/><line x1="9" y1="10" x2="9" y2="10" stroke-width="3"/><line x1="15" y1="10" x2="15" y2="10" stroke-width="3"/></svg>
+      GHOST
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- File ops -->
+    <button class="tb-btn" id="libraryBtn" title="Sprite library">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="6" width="5" height="15" rx="1"/><rect x="17" y="9" width="5" height="12" rx="1"/></svg>
+      LIB
+    </button>
+    <button class="tb-btn accent2" id="pushBtn" title="Push to library">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/><line x1="3" y1="21" x2="21" y2="21"/></svg>
+      PUSH
+    </button>
+    <div class="export-wrap">
+      <button class="tb-btn accent2" id="exportBtn" title="Export">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="17"/><polyline points="5 10 12 17 19 10"/><line x1="3" y1="21" x2="21" y2="21"/></svg>
+        EXPORT ▾
+      </button>
+      <div id="exportMenu" class="dropdown">
+        <div class="scale-row">
+          <span>EXPORT SCALE</span>
+          <button class="scale-btn" data-scale="1">1×</button>
+          <button class="scale-btn" data-scale="2">2×</button>
+          <button class="scale-btn active" data-scale="auto">AUTO</button>
+          <button class="scale-btn" data-scale="8">8×</button>
+          <button class="scale-btn" data-scale="16">16×</button>
+          <button class="scale-btn" data-scale="32">32×</button>
+        </div>
+        <div class="export-size-preview" id="exportSizePreview">— × — px</div>
+        <button id="exportPNG">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="3" x2="12" y2="17"/><polyline points="5 10 12 17 19 10"/><line x1="3" y1="21" x2="21" y2="21"/></svg>
+          PNG
+        </button>
+        <button id="exportSVG">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="3" x2="12" y2="17"/><polyline points="5 10 12 17 19 10"/><line x1="3" y1="21" x2="21" y2="21"/></svg>
+          SVG (vector)
+        </button>
+      </div>
+    </div>
+    <button class="tb-btn" id="newBtn" title="New canvas">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      NEW
+    </button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" id="layerPanelToggleBtn" title="Toggle layers">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      LAYERS
+    </button>
+
+    <!-- Mobile-only clear button (always visible in toolbar) -->
+    <button class="tb-btn danger" id="mobClearBtn" title="Clear active layer">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+      CLR
+    </button>
+
+    <!-- Mobile nav row: pan + zoom controls, shows as 2nd toolbar row on mobile -->
+    <div id="mobNavRow">
+      <span style="font-family:var(--display);font-size:8px;color:var(--muted);letter-spacing:1px;margin-right:2px;">NAV</span>
+      <button class="nav-btn" id="jLeft" title="Pan left"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="nav-btn" id="jUp" title="Pan up"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg></button>
+      <button class="nav-btn" id="jDown" title="Pan down"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <button class="nav-btn" id="jRight" title="Pan right"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <div class="nav-sep-v"></div>
+      <button class="nav-btn zoom" id="jZoomOut" title="Zoom out">−</button>
+      <span id="zoomLblMob" style="font-family:var(--display);font-size:9px;color:var(--accent2);min-width:36px;text-align:center;">100%</span>
+      <button class="nav-btn zoom" id="jZoomIn" title="Zoom in">+</button>
+      <div class="nav-sep-v"></div>
+      <button class="nav-btn" id="jFit" title="Fit canvas" style="width:auto;padding:0 7px;font-size:8px;font-family:var(--display);letter-spacing:.5px;">FIT</button>
+    </div>
+  </header>
+
+  <!-- CANVAS + LAYERS -->
+  <div id="appBody">
+    <main id="canvasArea">
+      <div id="canvasWrap">
+        <canvas id="pixelCanvas"></canvas>
+      </div>
+      <input type="text" id="textInput" class="text-input hidden" placeholder="Type…">
+      <div id="coords" class="coords">—</div>
+    </main>
+
+    <!-- LAYER PANEL (hidden by default) -->
+    <aside id="layerPanel" style="display:none;">
+      <div id="layerPanelHead">
+        <span>LAYERS</span>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <button id="addLayerBtn">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            ADD
+          </button>
+          <button id="layerPanelClose" title="Close layers">✕</button>
+        </div>
+      </div>
+      <div id="layerList"></div>
+    </aside>
+  </div>
+
+  <!-- PASTE TOOLBAR -->
+  <div id="pasteToolbar">
+    <span class="paste-hint">DRAG TO POSITION</span>
+    <button id="pasteConfirmBtn" class="confirm">✓ PLACE</button>
+    <button id="pasteCancelBtn">✕ CANCEL</button>
+  </div>
+</div><!-- #app -->
+
+<!-- MOBILE FLOATING BUTTON -->
+<button id="mobToolsFloater" title="Tools">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+</button>
+
+<!-- TOOLS POPUP (mobile) -->
+<div id="toolsPopup">
+  <!-- Header with close button -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <span style="font-family:var(--display);font-size:10px;color:var(--accent);letter-spacing:2px;">TOOLS</span>
+    <button id="toolsPopupClose" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font);font-size:12px;padding:4px 10px;border-radius:4px;cursor:pointer;line-height:1;">✕</button>
+  </div>
+  <div class="tp-section">
+    <div class="tp-title">TOOLS</div>
+    <div class="tp-row">
+      <button class="tp-btn" data-tool="paint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+        Paint
+      </button>
+      <button class="tp-btn" data-tool="erase">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l11-11 6 6-4 4"/><line x1="6" y1="20" x2="20" y2="20"/></svg>
+        Erase
+      </button>
+      <button class="tp-btn" data-tool="fill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l4 4L8 20l-4-4L16 4z"/><path d="M21.5 20.5a2.5 2.5 0 01-5 0c0-1.5 2.5-5 2.5-5s2.5 3.5 2.5 5z"/></svg>
+        Fill
+      </button>
+      <button class="tp-btn" data-tool="eyedrop">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 8l-4-4-9 9 4 4 9-9z"/><path d="M7 17l-4 4"/><circle cx="4.5" cy="20.5" r="1.5"/></svg>
+        Eyedrop
+      </button>
+      <button class="tp-btn" data-tool="text">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="12" y1="7" x2="12" y2="21"/></svg>
+        Text
+      </button>
+    </div>
+  </div>
+  <div class="tp-section">
+    <div class="tp-title">SELECTION</div>
+    <div class="tp-row">
+      <button class="tp-btn" id="tp_selectBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="1" stroke-dasharray="4 2"/></svg>
+        Select
+      </button>
+      <button class="tp-btn" id="tp_moveBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+        Move
+      </button>
+      <button class="tp-btn" id="tp_copyBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="1"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy
+      </button>
+      <button class="tp-btn" id="tp_pasteBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        Paste
+      </button>
+    </div>
+  </div>
+  <div class="tp-section">
+    <div class="tp-title">LAYERS</div>
+    <div class="tp-row">
+      <button class="tp-btn" id="tp_addLayerBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Add Layer
+      </button>
+      <button class="tp-btn" id="tp_layerVisBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Layer Vis
+      </button>
+      <button class="tp-btn" id="tp_layerToggleBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Layer Panel
+      </button>
+    </div>
+  </div>
+  <div class="tp-section">
+    <div class="tp-title">FILE & VIEW</div>
+    <div class="tp-row">
+      <button class="tp-btn" id="tp_ghostBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7 2 3 6 3 11v9l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2v-9c0-5-4-9-9-9z"/><line x1="9" y1="10" x2="9" y2="10" stroke-width="3"/><line x1="15" y1="10" x2="15" y2="10" stroke-width="3"/></svg>
+        Ghost
+      </button>
+      <button class="tp-btn" id="tp_libraryBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="6" width="5" height="15" rx="1"/><rect x="17" y="9" width="5" height="12" rx="1"/></svg>
+        Library
+      </button>
+      <button class="tp-btn" id="tp_exportPNGBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="17"/><polyline points="5 10 12 17 19 10"/><line x1="3" y1="21" x2="21" y2="21"/></svg>
+        PNG
+      </button>
+      <button class="tp-btn" id="tp_exportSVGBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="17"/><polyline points="5 10 12 17 19 10"/><line x1="3" y1="21" x2="21" y2="21"/></svg>
+        SVG
+      </button>
+      <button class="tp-btn" id="tp_newBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        New
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LIBRARY MODAL -->
+<div id="libraryModal" class="modal-overlay hidden">
+  <div class="modal-box wide">
+    <div class="modal-title">LIBRARY</div>
+    <div class="lib-actions"><button id="libCloseBtn">✕ Close</button></div>
+    <div id="libGrid" class="lib-grid"></div>
+    <div style="color:var(--muted);font-size:10px;margin-bottom:6px;letter-spacing:1px;">PASTE JSON OR URL</div>
+    <textarea id="libJsonArea" class="lib-json" placeholder="Paste JSON or https://… URL then click Import"></textarea>
+    <button id="libConfirmImport" class="start-btn" style="margin-top:10px;">IMPORT →</button>
+  </div>
+</div>
+
+<!-- PUSH MODAL -->
+<div id="pushModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-title">PUSH TO LIBRARY</div>
+    <input type="text" id="pushName" placeholder="Sprite name…" class="push-input">
+    <textarea id="pushJson" class="lib-json" readonly style="height:110px;margin-top:12px;"></textarea>
+    <div class="push-actions">
+      <button id="pushCopyBtn">Copy JSON</button>
+      <button id="pushSaveBtn" class="start-btn" style="margin:0;flex:1;">SAVE</button>
+      <button id="pushCloseBtn">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEXT TOOL POPUP -->
+<div id="textPop" class="text-pop hidden">
+  <div class="text-pop-title">TEXT TOOL</div>
+  <div class="text-pop-row">
+    <label>Font size</label>
+    <input type="range" id="textFontSize" min="6" max="48" value="12">
+    <span id="textFontSizeVal">12</span>
+  </div>
+  <div class="text-pop-row">
+    <label>Color</label>
+    <input type="color" id="textColorPick" value="#ffffff">
+  </div>
+  <div class="text-pop-row"><button id="textPopClose">Done ✓</button></div>
+</div>
+
+<!-- DESKTOP-ONLY WELCOME POPUP -->
+<div id="desktop-popup">
+  <div class="popup-box">
+    <button id="close-popup">✕</button>
+    <img src="https://i.postimg.cc/76F8bwm3/diagram-(5).png" alt="Welcome">
+  </div>
+</div>
+
+<!-- TOAST & BADGE -->
+<div id="toastEl"></div>
+<div id="capsLockBadge">⇪ COLOR LOCKED</div>
