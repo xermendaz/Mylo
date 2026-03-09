@@ -34,4 +34,4 @@ Most pixel art software you’ll find in browsers follows a standard set of tool
   <img src="https://i.postimg.cc/28WxcQQG/IMG-20260309-063256.png" width="200">
 </p>
 
-Produced By *Elwandore Studios*
+Produced By *Elwandore Studios* thx :3
