@@ -15,7 +15,7 @@ Myllo a **Pixal** Art drawing Software.
 <p align="center" style="font-size:small;">
   Diagram created with <a href="https://llyra.netlify.app/">Llyra</a> by xermendaz
   <a href="https://github.com/xermendaz/acl" target="_blank">
-    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="18" height="18" alt="GitHub"> Llyra's Repo
+    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="20" height="20" alt="GitHub"> Llyra's Repo
   </a>
 </p>
 ## What's Different With Myllo
