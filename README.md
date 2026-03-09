@@ -7,3 +7,7 @@ Myllo a **Pixal** Art drawing Software.
 
 *website* `vertion 3.7.4`  [Open Myllo](https://myllo.netlify.app/)
 
+
+<p align="center">
+  <img src="https://i.postimg.cc/76F8bwm3/diagram-(5).png" width="250">
+</p>
