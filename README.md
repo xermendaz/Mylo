@@ -9,5 +9,5 @@ Myllo a **Pixal** Art drawing Software.
 
 
 <p align="center">
-  <img src="https://i.postimg.cc/76F8bwm3/diagram-(5).png" width="250">
+  <img src="https://i.postimg.cc/76F8bwm3/diagram-(5).png" width="320">
 </p>
