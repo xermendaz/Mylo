@@ -342,14 +342,9 @@ body {
 #paletteWrap {
   display: flex; align-items: center; gap: 3px;
   max-width: 180px; overflow-x: auto; overflow-y: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent) var(--surface2);
-  flex-shrink: 0; cursor: grab;
+  scrollbar-width: none; flex-shrink: 0;
 }
-#paletteWrap:active { cursor: grabbing; }
-#paletteWrap::-webkit-scrollbar { display: block; height: 4px; }
-#paletteWrap::-webkit-scrollbar-track { background: var(--surface2); }
-#paletteWrap::-webkit-scrollbar-thumb { background: var(--accent); }
+#paletteWrap::-webkit-scrollbar { display: none; }
 #palette { display: flex; gap: 3px; align-items: center; flex-shrink: 0; }
 .pal-swatch {
   width: 20px; height: 20px;
@@ -586,6 +581,12 @@ body {
   letter-spacing: 1px; width: 100%; text-align: center;
 }
 
+#paletteWrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin; /* already hidden, but you can show it on desktop */
+}
+
 /* ── EXPORT DROPDOWN ── */
 .export-wrap { position: relative; flex-shrink: 0; }
 .dropdown {
@@ -707,56 +708,14 @@ body.view-mode #canvasArea { cursor: default; }
 
   #appBody { flex-direction: column; }
 
-  /* Layer panel sits as the last child of #appBody (flex column).
-     Give it a fixed height so #canvasArea (flex:1) takes the rest. */
   #layerPanel {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    height: 100px !important;
-    min-height: 100px !important;
-    max-height: 100px !important;
-    flex-shrink: 0 !important;
-    flex-grow: 0 !important;
-    flex-direction: column !important;
-    overflow: hidden !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-top: 3px solid var(--border) !important;
+    width: 100% !important; max-width: 100% !important; min-width: unset !important;
+    height: 150px; flex-shrink: 0;
+    border-left: none !important; border-top: 3px solid var(--border) !important;
   }
-  #layerPanelHead {
-    flex-shrink: 0 !important;
-    min-height: 28px !important;
-    max-height: 28px !important;
-    padding: 3px 8px !important;
-    overflow: hidden !important;
-  }
-  #layerList {
-    flex: 1 1 0% !important;
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    padding: 4px !important;
-    gap: 5px !important;
-    align-items: center !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  .layer-item {
-    min-width: 95px !important;
-    max-width: 95px !important;
-    width: 95px !important;
-    flex-shrink: 0 !important;
-    flex-grow: 0 !important;
-    margin-bottom: 0 !important;
-    overflow: hidden !important;
-    padding: 3px 5px !important;
-    box-sizing: border-box !important;
-  }
-  .layer-thumb { display: none !important; }
-  .layer-opacity-row { display: none !important; }
-  .layer-item-top { margin-bottom: 0 !important; }
+  #layerList { display: flex; flex-direction: row; overflow-x: auto; overflow-y: hidden; padding: 4px; gap: 4px; }
+  .layer-item { min-width: 110px; margin-bottom: 0; flex-shrink: 0; }
+  .layer-thumb { display: none; }
 
   #canvasArea { flex: 1; }
   .coords { bottom: 10px; }
@@ -920,4 +879,4 @@ body.view-mode #canvasArea { cursor: default; }
 @media(max-width: 700px) { #layerPanelClose { display: flex !important; align-items: center; justify-content: center; } }
 
 /* ── Small tweaks: modal spacing ── */
-#setupModal .setup-row:first-of-type { margin-top: 12px; }
+#setupModal .setup-row:first-of-type { margin-top: 12px; } 
