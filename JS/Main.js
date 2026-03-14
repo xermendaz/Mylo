@@ -325,10 +325,16 @@ document.getElementById('addPaletteBtn').addEventListener('click',function(){
   if(palette.indexOf(currentColor)<0){palette.unshift(currentColor);buildPaletteUI();setColor(currentColor);}
 });
 
-document.getElementById('paletteWrap').addEventListener('wheel', (e) => {
-  e.preventDefault();
-  e.currentTarget.scrollLeft += e.deltaY;
+// Paste this <script> block into your HTML near </body>
+// It makes the color palette strip scroll horizontally with the mouse wheel
+
+document.getElementById('paletteWrap')?.addEventListener('wheel', function(e) {
+  if (e.deltaY !== 0) {
+    e.preventDefault();
+    this.scrollLeft += e.deltaY * 1.5;
+  }
 }, { passive: false });
+
 
 /* ── Tool selection ── */
 function setTool(name){
