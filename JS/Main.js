@@ -961,10 +961,11 @@ function buildLibraryUI(){
 }
 
 function loadFromData(data){
-  COLS=data.cols;ROWS=data.rows;
-  layers=[mkLayer('Layer 1')];layers[0].pixels=data.pixels.slice();
-  activeLayer=0;ghostData=null;selectRect=null;undoStack=[];
-  autoFitZoom();renderAll();buildPaletteUI();buildLayerPanel();
+  COLS=data.cols; ROWS=data.rows;
+  layers=[mkLayer('Layer 1')];
+  layers[0].pixels = decompressPixels(data.pixels, COLS*ROWS);
+  activeLayer=0; ghostData=null; selectRect=null; undoStack=[];
+  autoFitZoom(); renderAll(); buildPaletteUI(); buildLayerPanel();
 }
 
 /* ═══════════════════════════════════
